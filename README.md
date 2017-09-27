@@ -1,6 +1,6 @@
 # PyKarel
 
-A Python educational programming language based on Karel
+A Python-based educational programming language inspired by Karel
 
 https://en.wikipedia.org/wiki/Karel_(programming_language)
 
