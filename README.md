@@ -53,22 +53,22 @@ Every PyKarel program must start with
 ```python
 import Karel
 ```
-Create a Karel robot at coordinates X=1, Y=0, facing South
+Create a Karel robot at coordinates X=1, Y=1, facing South
 ```python
 import Karel
-karel = Karel.Robot(1, 0, Karel.SOUTH)
+karel = Karel.Robot(1, 1, Karel.SOUTH)
 ```
 Create a World by loading a World file and add karel to it
 ```python
 import Karel
-karel = Karel.Robot(1, 0, Karel.SOUTH)
+karel = Karel.Robot(1, 1, Karel.SOUTH)
 world = Karel.World("worlds/10x20-room-closed.txt")
 world.add_robot(karel)
 ```
 Move Karel forward one space, turn left 90 degrees, then move forward again
 ```python
 import Karel
-karel = Karel.Robot(1, 0, Karel.SOUTH)
+karel = Karel.Robot(1, 1, Karel.SOUTH)
 world = Karel.World("worlds/10x20-room-closed.txt")
 world.add_robot(karel)
 
@@ -93,7 +93,7 @@ def turnright():
   karel.turnleft()
   karel.turnleft()
   
-karel = Karel.Robot(1, 0, Karel.SOUTH)
+karel = Karel.Robot(1, 1, Karel.SOUTH)
 world = Karel.World("worlds/10x20-room-closed.txt")
 world.add_robot(karel)
 
