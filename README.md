@@ -4,6 +4,14 @@ A Python educational programming language based on Karel
 
 https://en.wikipedia.org/wiki/Karel_(programming_language)
 
+## Resources
+
+* [Introduction](https://github.com/cpiehl/pykarel#introduction)
+* [Getting Started](https://github.com/cpiehl/pykarel#getting-started)
+* [Wiki](https://github.com/cpiehl/pykarel/wiki)
+* [API Reference](https://github.com/cpiehl/pykarel/wiki/API-Reference)
+* [Examples](https://github.com/cpiehl/pykarel/wiki/Examples)
+
 ## Installation
 
 1. Download and install Python 3 from the official website https://www.python.org/downloads/
