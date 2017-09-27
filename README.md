@@ -7,7 +7,7 @@ https://en.wikipedia.org/wiki/Karel_(programming_language)
 ## Installation
 
 1. Download and install Python 3 from the official website https://www.python.org/downloads/
-2. Extract the latest release of PyKarel
+2. Extract the latest release of PyKarel https://github.com/cpiehl/pykarel/releases/latest
 
 ## Introduction
 
