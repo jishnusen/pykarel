@@ -34,11 +34,17 @@ SOUTH = 2
 EAST = 3
 
 class World:
+	symbols = {
+		"wall": "#",
+		"beeper": "o",
+		"path": " "
+	}
+
 	def __init__(self, filename, robots=[]):
 		self.grid = []
 		self.height = 0
 		self.width = 0
-		self.speed = 1
+		self.step_delay = 0.5
 		self.robots = []
 		self.breakpoint = False
 		self.step = False
@@ -52,7 +58,7 @@ class World:
 		for robot in robots:
 			self.add_robot(robot)
 
-		self.print_world()
+		self.print_world(fast=True)
 
 
 	def add_robot(self, robot):
@@ -66,7 +72,7 @@ class World:
 			raise ValueError("X value outside world boundaries!")
 		if 0 > robot.y >= self.height:
 			raise ValueError("Y value outside world boundaries!")
-		if self.grid[robot.y][robot.x] == '#':
+		if self.grid[robot.y][robot.x] == World.symbols["wall"]:
 			raise ValueError("Robot placed on a wall!")
 		if self.grid[robot.y][robot.x] in Robot.dirs:
 			raise ValueError("Robot placed on another robot!")
@@ -75,9 +81,12 @@ class World:
 		self.print_world(fast=True)
 
 	def set_speed(self, speed):
-		'''Sets world simulation speed to a range (0, 3]'''
-		if speed > 0:
-			self.speed = 0.1 / max(0, min(speed, 3))
+		'''Sets world simulation speed to a range [1, 4]'''
+		speeds = [0.5, 0.15, 0.03, 0]
+		try:
+			self.step_delay = speeds[speed-1]
+		except IndexError:
+			pass
 
 	def print_world(self, fast=False):
 		output = "\n"*100
@@ -98,9 +107,9 @@ class World:
 			input()
 			self.breakpoint = False
 		else:
-			print(output, end="")
 			if not fast:
-				time.sleep(self.speed)
+				time.sleep(self.step_delay)
+			print(output, end="")
 
 	def add_breakpoint(self):
 		'''Adds single breakpoint, press ENTER to continue'''
@@ -125,13 +134,17 @@ class Robot:
 	}
 	#~ dirs = ['^', '<', 'v', '>']
 	moves = {
-		NORTH: (0, -1),
-		WEST:  (-1, 0),
-		SOUTH: (0, 1),
-		EAST:  (1, 0)
+		NORTH: {'x': 0, 'y':-1},
+		WEST:  {'x':-1, 'y': 0},
+		SOUTH: {'x': 0, 'y': 1},
+		EAST:  {'x': 1, 'y': 0}
 	}
 
-	class BeeperError(BaseException):
+	class PutBeeperError(BaseException):
+		pass
+	class PickBeeperError(BaseException):
+		pass
+	class OutOfBeepersError(BaseException):
 		pass
 	class MovementError(BaseException):
 		pass
@@ -144,10 +157,10 @@ class Robot:
 
 	def front_is_clear(self):
 		'''Return True if space in front of robot can be moved into'''
-		newx = self.x + Robot.moves[self.dir][0]
-		newy = self.y + Robot.moves[self.dir][1]
+		newx = self.x + Robot.moves[self.dir]['x']
+		newy = self.y + Robot.moves[self.dir]['y']
 		if 0 <= newx < self.world.width and 0 <= newy < self.world.height:
-			if self.world.grid[newy][newx] != '#':
+			if self.world.grid[newy][newx] != World.symbols["wall"]:
 				for robot in self.world.robots:
 					if robot.x == newx and robot.y == newy:
 						return False
@@ -158,8 +171,8 @@ class Robot:
 		'''Move robot forward one step'''
 		if not Robot.front_is_clear(self):
 			raise Robot.MovementError("Movement blocked!")
-		self.x += Robot.moves[self.dir][0]
-		self.y += Robot.moves[self.dir][1]
+		self.x += Robot.moves[self.dir]['x']
+		self.y += Robot.moves[self.dir]['y']
 		self.world.print_world()
 
 	def turnleft(self):
@@ -169,36 +182,39 @@ class Robot:
 
 	def check_beeper(self):
 		'''Return True if space in front contains a beeper'''
-		newx = self.x + Robot.moves[self.dir][0]
-		newy = self.y + Robot.moves[self.dir][1]
+		newx = self.x + Robot.moves[self.dir]['x']
+		newy = self.y + Robot.moves[self.dir]['y']
 		if 0 <= newx < self.world.width and 0 <= newy < self.world.height:
-			if self.world.grid[newy][newx] == 'o':
+			if self.world.grid[newy][newx] == World.symbols["beeper"]:
 				for robot in self.world.robots:
 					if robot.x == newx and robot.y == newy:
 						return False
 				return True
 		return False
 
+	def beeper_count(self):
+		return self.beepercount
+
 	def pick_beeper(self):
 		'''Pick up beeper in front of robot and add it to the beeper storage'''
 		if not self.check_beeper():
-			raise Robot.BeeperError("No beeper at location!")
-		newx = self.x + Robot.moves[self.dir][0]
-		newy = self.y + Robot.moves[self.dir][1]
-		self.world.grid[newy][newx] = ' '
+			raise Robot.PickBeeperError("No beeper at location!")
+		newx = self.x + Robot.moves[self.dir]['x']
+		newy = self.y + Robot.moves[self.dir]['y']
+		self.world.grid[newy][newx] = World.symbols["path"]
 		self.beepercount += 1
 		self.world.print_world()
 
 	def put_beeper(self):
 		'''Place beeper from robot's beeper storage in front of the robot'''
 		if not self.front_is_clear():
-			raise Robot.BeeperError("No space to place beeper!")
+			raise Robot.PutBeeperError("No space to place beeper!")
 		if self.check_beeper():
-			raise Robot.BeeperError("Space already contains beeper!")
+			raise Robot.PutBeeperError("Space already contains beeper!")
 		if self.beepercount < 1:
-			raise Robot.BeeperError("Not carrying any beepers!")
-		newx = self.x + Robot.moves[self.dir][0]
-		newy = self.y + Robot.moves[self.dir][1]
-		self.world.grid[newy][newx] = 'o'
+			raise Robot.OutOfBeepersError("Not carrying any beepers!")
+		newx = self.x + Robot.moves[self.dir]['x']
+		newy = self.y + Robot.moves[self.dir]['y']
+		self.world.grid[newy][newx] = World.symbols["beeper"]
 		self.beepercount -= 1
 		self.world.print_world()
