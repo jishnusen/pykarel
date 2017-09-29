@@ -49,7 +49,7 @@ turnleft() # turns 90 degrees left
 pick_beeper() # picks up a beeper and puts it in Karel's beeper storage
 put_beeper() # puts down a beeper from Karel's beeper storage
 ```
-In order to safely interact with the world, Karel also has 2 commands to learn about its surroundings:
+In order to safely interact with the world, Karel also has 3 commands to learn about its surroundings:
 ```python
 front_is_clear() # checks if Karel can safely move forward
 check_beeper() # checks if a beeper is in front of Karel
