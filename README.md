@@ -53,6 +53,7 @@ In order to safely interact with the world, Karel also has 2 commands to learn a
 ```python
 front_is_clear() # checks if Karel can safely move forward
 check_beeper() # checks if a beeper is in front of Karel
+beeper_count() # returns the number of beepers in karel's beeper storage
 ```
 
 ## Getting Started
