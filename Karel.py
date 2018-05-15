@@ -151,8 +151,8 @@ class Robot:
 
 	def __init__(self, x, y, dir, beepers=0):
 		self.dir = dir # 0 = N, 1 = W, 2 = S, 3 = E
-		self.x = x
-		self.y = y
+		self.x = x-1
+		self.y = y-1
 		self.beepercount = beepers
 
 	def front_is_clear(self):
@@ -178,6 +178,11 @@ class Robot:
 	def turnleft(self):
 		'''Rotate robot 90 degrees left'''
 		self.dir = (self.dir + 1) % 4
+		self.world.print_world()
+
+	def turnright(self):
+		'''Rotate robot 90 degrees left'''
+		self.dir = (self.dir - 1) % 4
 		self.world.print_world()
 
 	def check_beeper(self):
